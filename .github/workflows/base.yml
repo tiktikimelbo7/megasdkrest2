@@ -1,32 +1,38 @@
-name: Build and Push Base image
+name: ghcr.io
 
-on :
+on:
   push:
     branches:
       - master
+    tags:
+      - v*
   schedule:
-    - cron: 00 02 * * *
-  workflow_dispatch:
+    - cron: "0 0 * * *"
+
+env:
+  IMAGE: ghcr.io/${{ github.repository }}
+
 jobs:
-  BuildBase:
+  build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1 
+
+      - name: Login to ghcr.io registry
+        run: docker login https://ghcr.io -u token -p ${{ secrets.GH_TOKEN }}
+
+      - if: startsWith(github.ref, 'refs/heads/master')
+        run: echo "TAG=latest" >> $GITHUB_ENV
+
+      - if: startsWith(github.ref, 'refs/tags')
+        run: echo "TAG=$(git describe --tags)" >> $GITHUB_ENV
+
+      - name: Build & Push
+        uses: docker/build-push-action@v2.7.0
         with:
-          registry: ghcr.io
-          username: token
-          password: ${{ secrets.GH_TOKEN }}
-      - name: Build Base images
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./Dockerfile.base
-          platforms: linux/amd64
+          context: ./
+          file: ./Dockerfile
           push: true
-          tags: ghcr.io/tiktikimelbo7/megarestbase:latest
+          platforms: linux/amd64
+          tags: ghcr.io/${{ github.repository }}:${{ env.TAG }}
