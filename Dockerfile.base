@@ -1,8 +1,6 @@
-FROM golang:alpine
- 
-# Deps
-RUN apk add --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing --update \
-     zlib-dev zlib-static curl-dev curl-static openssl-dev openssl-libs-static \
-     alpine-sdk git libtool autoconf automake linux-headers musl-dev m4 build-base perl ca-certificates \
-     crypto++-dev crypto++-static brotli-dev brotli-static unzip tar xz wget \
-     c-ares-dev c-ares-static sqlite-dev sqlite-static libsodium-dev libsodium-static  nghttp2-dev nghttp2-static
+FROM ubuntu:20.04
+RUN apt update && upgrade
+RUN apt install libcurl-devel libcurl4-openssl-dev
+RUN apt install c-ares-devel libcares-devel libc-ares-dev
+RUN apt install openssl-devel libssl-dev
+RUN apt install libcryptopp-devel libcrypto++-dev
