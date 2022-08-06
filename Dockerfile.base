@@ -1,4 +1,5 @@
-FROM ubuntu:20.04
+FROM ubuntu:latest
+
 RUN apt update && upgrade
 RUN apt install libcurl-devel libcurl4-openssl-dev
 RUN apt install c-ares-devel libcares-devel libc-ares-dev
