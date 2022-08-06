@@ -4,9 +4,9 @@ ARG CPU_ARCH="amd64"
 ENV HOST_CPU_ARCH=$CPU_ARCH
 
 # MegaSDK
-RUN git clone https://github.com/meganz/sdk.git --depth=1 -b v4.0.2 ~/sdk \
-    && cd ~/sdk && rm -rf .git \
-    && autoupdate -fIv && ./autogen.sh \
+RUN git clone https://github.com/meganz/sdk.git sdk && cd sdk && \
+    git checkout v4.0.2 && \
+    sh autogen.sh && \
     ./configure --disable-examples --disable-shared --enable-static --without-freeimage && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
     make install
